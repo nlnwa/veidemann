@@ -24,8 +24,8 @@ spec:
           configMap:
             name: veidemann-dashboard
             items:
-              - key: environment.json
-                path: environment.json
+              - key: config.json
+                path: config.json
       containers:
         - name: veidemann-dashboard
           image: ghcr.io/nlnwa/veidemann-dashboard:0.18.6
@@ -34,5 +34,6 @@ spec:
               name: http
               protocol: TCP
           volumeMounts:
-            - mountPath: /usr/share/nginx/html/veidemann/assets/config
+            - mountPath: /usr/share/nginx/app/veidemann/assets/config.json
+              subPath: config.json
               name: config
