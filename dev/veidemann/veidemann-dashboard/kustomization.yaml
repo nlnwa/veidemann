@@ -6,3 +6,9 @@ namespace: veidemann
 resources:
   - ../../../bases/veidemann-dashboard
   - dashboard_ingressroute.yaml
+
+configMapGenerator:
+  - name: veidemann-dashboard
+    behavior: replace
+    files:
+      - config.json

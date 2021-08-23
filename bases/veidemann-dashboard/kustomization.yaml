@@ -11,4 +11,4 @@ commonLabels:
 configMapGenerator:
   - name: veidemann-dashboard
     literals:
-      - environment.json="{}"
+      - config.json="{}"
