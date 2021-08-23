@@ -28,7 +28,7 @@ spec:
                 path: environment.json
       containers:
         - name: veidemann-dashboard
-          image: ghcr.io/nlnwa/veidemann-dashboard:0.18.5
+          image: ghcr.io/nlnwa/veidemann-dashboard:0.18.6
           ports:
             - containerPort: 80
               name: http
