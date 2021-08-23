@@ -43,7 +43,7 @@ spec:
             name: veidemann-controller-envoy
       containers:
         - name: veidemann-controller
-          image: norsknettarkiv/veidemann-controller:0.8.0
+          image: ghcr.io/nlnwa/veidemann-controller:0.8.1
           ports:
             - name: grpc
               containerPort: 7700
