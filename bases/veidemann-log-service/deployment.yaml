@@ -42,7 +42,7 @@ spec:
             - name: DB_HOST
               value: "scylla-0.scylla"
             - name: DB_KEYSPACE
-              value: "v7n_v1_dc1"
+              value: "v7n_v2_dc1"
             - name: JAEGER_SERVICE_NAME
               value: veidemann-log-service
             - name: JAEGER_AGENT_HOST
