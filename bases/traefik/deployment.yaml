@@ -7,6 +7,8 @@ metadata:
     app: traefik
 
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -21,7 +23,7 @@ spec:
       serviceAccountName: traefik-ingress-controller
       containers:
         - name: traefik
-          image: traefik:v2.3.5
+          image: traefik:v2.5.3
           ports:
             - name: web
               containerPort: 80
