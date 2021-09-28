@@ -49,13 +49,13 @@ spec:
                   readOnly: true
               args:
                 - dump
-                - --export
+                - -e
                 - veidemann.config
-                - --export
+                - -e
                 - veidemann.config_crawl_entities
-                - --export
+                - -e
                 - veidemann.config_seeds
-                - --export
+                - -e
                 - veidemann.system
                 - --password-file
                 - /secret/rethinkdb-password
