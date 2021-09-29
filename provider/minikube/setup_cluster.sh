@@ -4,11 +4,11 @@ SCRIPT_DIR=$(dirname $0)
 PREREQUISITES=${SCRIPT_DIR}/../../scripts/prerequisites.sh
 UPDATE_HOSTS=${SCRIPT_DIR}/../../scripts/update_hosts.sh
 
-source $PREREQUISITES kubectl minikube helm linkerd kustomize veidemannctl
+source $PREREQUISITES kubectl minikube helm linkerd veidemannctl
 
 set -e
 
-minikube start # --cpus 4 --memory 12000 --driver docker
+minikube start --kubernetes-version=v1.21.5 # --cpus 4 --memory 12000 --driver docker
 
 # Create patch and update /etc/hosts for local cluster ip
 HOSTNAME=veidemann.test
@@ -41,27 +41,27 @@ LINKERD_SERVER_VERSION=$(linkerd version | tail -1 | awk '{print $3}')
 if [ "$LINKERD_SERVER_VERSION" = "unavailable" ]; then
   linkerd check --pre
   linkerd install | kubectl apply -f -
+  linkerd check
+  linkerd viz install | kubectl apply -f -
 fi
-linkerd check
 
 # Install traefik
-kustomize build ${SCRIPT_DIR}/../../dev/ingress-traefik | kubectl apply -f -
-
-# Install linkerd ingressroute
-kustomize build ${SCRIPT_DIR}/../../dev/linkerd | kubectl apply -f -
+kubectl apply -k ${SCRIPT_DIR}/../../dev/ingress-traefik
 
 # Install redis-operator
-kustomize build ${SCRIPT_DIR}/../../dev/redis-operator | kubectl apply -f -
-
+kubectl apply -k ${SCRIPT_DIR}/../../dev/redis-operator
 
 # Install jaeger-operator
-kustomize build ${SCRIPT_DIR}/../../dev/observability | kubectl apply -f -
+kubectl apply -k ${SCRIPT_DIR}/../../dev/observability
+
+# Insatll ingressroute to linkerd.veidemann.test
+kubectl apply -k ${SCRIPT_DIR}/../../dev/linkerd-viz
 
 # Give kubernetes time to install jaeger-operator CRD
 sleep 1
 
 # Install jaeger
-kustomize build ${SCRIPT_DIR}/../../dev/observability/jaeger | kubectl apply -f -
+kubectl apply -k ${SCRIPT_DIR}/../../dev/observability/jaeger
 
 # Install cert manager
 ${SCRIPT_DIR}/../../dev/cert-manager/install_cert_manager.sh

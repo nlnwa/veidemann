@@ -5,3 +5,8 @@ resources:
 
 patchesStrategicMerge:
   - minikube_ip_patch.yaml
+
+images:
+  - name: norsknettarkiv/veidemann-log-service
+    newName: ghcr.io/nlnwa/veidemann-log-service
+    newTag: 0.1.7-alpha.1
