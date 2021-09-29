@@ -16,4 +16,4 @@ spec:
       restartPolicy: Never
       containers:
         - name: veidemann-log-schema
-          image: norsknettarkiv/veidemann-log-schema:2.0.0
+          image: ghcr.io/nlnwa/veidemann-log-schema:2.0.0
