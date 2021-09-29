@@ -19,10 +19,6 @@ spec:
         app.kubernetes.io/name: veidemann-controller
         app.kubernetes.io/component: controller
       annotations:
-        # skip outbound to jaeger collector
-        config.linkerd.io/skip-outbound-ports: "14250"
-        # skip inbound API ports: grpc (7700) and grpc-web (10000)
-        config.linkerd.io/skip-inbound-ports: "7700,10000"
         linkerd.io/inject: enabled
     spec:
       volumes:
