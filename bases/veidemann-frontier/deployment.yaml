@@ -19,8 +19,8 @@ spec:
         app.kubernetes.io/name: veidemann-frontier
         app.kubernetes.io/component: frontier
       annotations:
-        # skip outbound to redis and jaeger-collector
-        config.linkerd.io/skip-outbound-ports: "6379,14250"
+        # skip outbound to redis
+        config.linkerd.io/skip-outbound-ports: "6379"
         linkerd.io/inject: enabled
     spec:
       volumes:
