@@ -20,9 +20,9 @@ spec:
         app.kubernetes.io/component: log-service
       annotations:
         # shard awereness fails if linkerd is enabled
-        linkerd.io/inject: disabled
+        linkerd.io/inject: enabled
         # skip outbound to scylla
-        linkerd.io/skip-outbound-ports: "9042,19042"
+        config.linkerd.io/skip-outbound-ports: "9042,19042"
     spec:
       containers:
         - name: veidemann-log-service
