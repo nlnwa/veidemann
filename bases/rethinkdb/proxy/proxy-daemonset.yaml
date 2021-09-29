@@ -18,7 +18,6 @@ spec:
         app.kubernetes.io/component: proxy
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/opaque-ports: "28015"
         config.linkerd.io/skip-inbound-ports: "29015"
         config.linkerd.io/skip-outbound-ports: "29015"
     spec:

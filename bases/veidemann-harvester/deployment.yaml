@@ -21,10 +21,9 @@ spec:
         app.kubernetes.io/component: harvester
       annotations:
         linkerd.io/inject: enabled
-        # opaque proxy port
-        config.linkerd.io/opaque-ports: "9900"
-        # skip outbound to cache (3128), jaeger collector  (14250) and log service (8080)
-        config.linkerd.io/skip-outbound-ports: "3128, 8080, 14250"
+        # No linkerd proxying for intra-pod communications on these ports
+        # TODO: this must be retested when linkerd is upgraded to next stable version > stable-2.10.2
+        config.linkerd.io/skip-inbound-ports: "9000,9900,3000"
     spec:
       volumes:
         - name: workdir
@@ -90,10 +89,6 @@ spec:
               value: "9301"
             - name: JAEGER_SERVICE_NAME
               value: veidemann-browser-controller
-            - name: JAEGER_AGENT_HOST
-              value: localhost
-            - name: JAEGER_AGENT_PORT
-              value: "6831"
             - name: JAEGER_SAMPLER_TYPE
               value: remote
             - name: JAEGER_SAMPLER_PARAM

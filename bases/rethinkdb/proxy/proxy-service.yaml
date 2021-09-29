@@ -5,6 +5,8 @@ metadata:
   labels:
     app.kubernetes.io/name: rethinkdb
     app.kubernetes.io/component: proxy
+  annotations:
+    config.linkerd.io/opaque-ports: "28015"
 spec:
   type: ClusterIP
   ports:

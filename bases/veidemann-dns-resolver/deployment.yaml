@@ -18,7 +18,6 @@ spec:
         app.kubernetes.io/component: dns-resolver
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/skip-outbound-ports: "8080"
     spec:
       volumes:
         - name: corefile

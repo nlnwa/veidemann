@@ -9,19 +9,9 @@ spec:
 ---
 
 apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: grpcweb-stripprefix
-spec:
-  stripPrefix:
-    prefixes:
-      - /grpc-web
----
-
-apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: linkerd
+  name: linkerd-viz
 spec:
   entryPoints:
     - web
@@ -30,8 +20,8 @@ spec:
     - match: Host(`linkerd.veidemann.test`)
       kind: Rule
       services:
-        - name: linkerd-web
-          namespace: linkerd
+        - name: web
+          namespace: linkerd-viz
           port: 8084
       middlewares:
         - name: linkerd-host-header

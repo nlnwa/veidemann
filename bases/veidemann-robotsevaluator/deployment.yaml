@@ -19,7 +19,6 @@ spec:
         app.kubernetes.io/name: veidemann-robotsevaluator
         app.kubernetes.io/component: robotsevaluator
       annotations:
-        # config.linkerd.io/opaque-ports: "8080"
         linkerd.io/inject: enabled
     spec:
       volumes:

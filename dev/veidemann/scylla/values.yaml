@@ -1,12 +1,10 @@
 scyllaImage:
-  tage: 4.4.1
+  tage: 4.4.4
 
 
 agentImage:
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 2.3.0
-
-developerMode: true
+  tag: 2.5.1
 
 datacenter: dc1
 

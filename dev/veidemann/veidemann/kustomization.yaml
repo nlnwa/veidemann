@@ -18,3 +18,4 @@ resources:
   - ../veidemann-robotsevaluator
   - ../veidemann-scopeservice
   - ../veidemann-warcvalidator
+  - ../veidemann-log-schema

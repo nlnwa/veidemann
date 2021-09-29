@@ -29,7 +29,7 @@ spec:
 
       containers:
       - name: main
-        image: quay.io/dexidp/dex:v2.25.0
+        image: ghcr.io/dexidp/dex:v2.30.0
         imagePullPolicy: IfNotPresent
         command:
         - /usr/local/bin/dex

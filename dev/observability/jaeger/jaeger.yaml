@@ -3,6 +3,8 @@ kind: Jaeger
 metadata:
   name: jaeger
 spec:
+  annotations:
+    linkerd.io/inject: enabled
   strategy: allInOne
   allInOne:
     options:

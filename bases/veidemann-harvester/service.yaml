@@ -6,6 +6,8 @@ metadata:
     app.kubernetes.io/name: veidemann-harvester
     app.kubernetes.io/component: harvester
     metrics: prometheus
+  annotations:
+    config.linkerd.io/opaque-ports: "8080"
 spec:
   type: ClusterIP
   ports:

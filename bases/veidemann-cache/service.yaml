@@ -6,6 +6,8 @@ metadata:
     app.kubernetes.io/name: veidemann-cache
     app.kubernetes.io/component: cache-balancer
     metrics: prometheus
+  annotations:
+    config.linkerd.io/opaque-ports: "3128"
 spec:
   type: ClusterIP
   ports:

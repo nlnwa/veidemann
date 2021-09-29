@@ -19,8 +19,6 @@ spec:
         app.kubernetes.io/name: veidemann-contentwriter
         app.kubernetes.io/component: contentwriter
       annotations:
-        # skip outbound to jaeger collector
-        config.linkerd.io/skip-outbound-ports: "14250"
         linkerd.io/inject: enabled
     spec:
       terminationGracePeriodSeconds: 600

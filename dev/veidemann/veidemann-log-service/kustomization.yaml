@@ -7,5 +7,4 @@ resources:
   - ../../../bases/veidemann-log-service
 
 patchesStrategicMerge:
-  - schema_job_env_patch.yaml
   - deployment_env_patch.yaml

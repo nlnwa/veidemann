@@ -20,13 +20,13 @@ spec:
         app.kubernetes.io/component: log-service
       annotations:
         # shard awereness fails if linkerd is enabled
-        linkerd.io/inject: disabled
+        linkerd.io/inject: enabled
         # skip outbound to scylla
-        linkerd.io/skip-outbound-ports: "9042,19042"
+        config.linkerd.io/skip-outbound-ports: "9042,19042"
     spec:
       containers:
         - name: veidemann-log-service
-          image: norsknettarkiv/veidemann-log-service:v0.1.6
+          image: ghcr.io/nlnwa/veidemann-log-service:0.1.7
           ports:
             - name: grpc
               containerPort: 8080
@@ -42,7 +42,7 @@ spec:
             - name: DB_HOST
               value: "scylla-0.scylla"
             - name: DB_KEYSPACE
-              value: "v7n_v1_dc1"
+              value: "v7n_v2_dc1"
             - name: JAEGER_SERVICE_NAME
               value: veidemann-log-service
             - name: JAEGER_AGENT_HOST
