@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: veidemann-log-schema
+  labels:
+    app.kubernetes.io/name: veidemann-log-schema
+spec:
+  ttlSecondsAfterFinished: 60
+  backoffLimit: 3
+  template:
+    metadata:
+      name: veidemann-log-schema
+      labels:
+        app.kubernetes.io/name: veidemann-log-schema
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: veidemann-log-schema
+          image: norsknettarkiv/veidemann-log-schema:2.0.0
