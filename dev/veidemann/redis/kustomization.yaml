@@ -4,4 +4,4 @@ kind: Kustomization
 namespace: veidemann
 
 resources:
-  - redis_veidemann_frontier.yaml
+  - ../../../bases/redis

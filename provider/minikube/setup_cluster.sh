@@ -48,9 +48,6 @@ fi
 # Install traefik
 kubectl apply -k ${SCRIPT_DIR}/../../dev/ingress-traefik
 
-# Install redis-operator
-kubectl apply -k ${SCRIPT_DIR}/../../dev/redis-operator
-
 # Install jaeger-operator
 kubectl apply -k ${SCRIPT_DIR}/../../dev/observability
 
