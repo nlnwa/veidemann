@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    redis: veidemann-frontier
+    service-type: headless
+  name: redis-veidemann-frontier-headless
+spec:
+  clusterIP: None
+  ports:
+  - name: redis
+    port: 6379
+    protocol: TCP
+    targetPort: 6379
+  - name: exporter
+    port: 9121
+    protocol: TCP
+    targetPort: 9121
+  selector:
+    redis: veidemann-frontier
+  type: ClusterIP
