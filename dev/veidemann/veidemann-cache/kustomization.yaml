@@ -5,3 +5,23 @@ namespace: veidemann
 
 resources:
   - ../../../bases/veidemann-cache
+
+
+patchesJson6902:
+- target:
+    version: v1 # apiVersion
+    group: apps
+    kind: StatefulSet
+    name: veidemann-cache
+  patch: |
+    - op: remove
+      path: "/spec/template/spec/volumes/2"
+patchesStrategicMerge:
+  - cache_volume_patch.yaml
+  - cache_resources_patch.yaml
+
+
+configMapGenerator:
+  - name: squid-conf-template
+    files:
+      - squid.conf
