@@ -36,17 +36,7 @@ spec:
             - name: grpc
               containerPort: 7053
               protocol: TCP
-          envFrom:
-            - secretRef:
-                name: rethinkdb-env
-                optional: false
           env:
-            - name: DB_HOST
-              value: "rethinkdb-proxy"
-            - name: DB_PORT
-              value: "28015"
-            - name: DB_NAME
-              value: "veidemann"
             - name: API_PORT
               value: "7053"
             - name: PROXY_HOST
