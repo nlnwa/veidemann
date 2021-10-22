@@ -47,15 +47,14 @@ fi
 
 # Install traefik
 kubectl apply -k ${SCRIPT_DIR}/../../dev/ingress-traefik
+kubectl wait --for condition=established crd/ingressroutes.traefik.containo.us
+
+# Install ingressroute to linkerd.veidemann.test
+kubectl apply -k ${SCRIPT_DIR}/../../dev/linkerd-viz
 
 # Install jaeger-operator
 kubectl apply -k ${SCRIPT_DIR}/../../dev/observability
-
-# Insatll ingressroute to linkerd.veidemann.test
-kubectl apply -k ${SCRIPT_DIR}/../../dev/linkerd-viz
-
-# Give kubernetes time to install jaeger-operator CRD
-sleep 1
+kubectl wait --for condition=established crd/jaegers.jaegertracing.io
 
 # Install jaeger
 kubectl apply -k ${SCRIPT_DIR}/../../dev/observability/jaeger
