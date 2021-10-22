@@ -5,8 +5,8 @@ metadata:
   labels:
     app.kubernetes.io/name: veidemann-reset
 spec:
-  # Job is eligible to be deleted immediatly after it is completed
-  ttlSecondsAfterFinished: 0
+  # Job is eligible to be deleted one minute after it is completed
+  ttlSecondsAfterFinished: 60
   backoffLimit: 1
   template:
     metadata:
