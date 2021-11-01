@@ -54,6 +54,8 @@ kubectl apply -k ${SCRIPT_DIR}/../../dev/linkerd-viz
 
 # Install jaeger-operator
 kubectl apply -k ${SCRIPT_DIR}/../../dev/observability
+# Give some time to create CRD before waiting
+sleep 1
 kubectl wait --for condition=established crd/jaegers.jaegertracing.io
 
 # Install jaeger
