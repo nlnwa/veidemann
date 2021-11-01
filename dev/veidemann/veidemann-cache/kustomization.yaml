@@ -15,7 +15,8 @@ patchesJson6902:
     name: veidemann-cache
   patch: |
     - op: remove
-      path: "/spec/template/spec/volumes/2"
+      path: "/spec/template/spec/volumes/3"
+
 patchesStrategicMerge:
   - cache_volume_patch.yaml
   - cache_resources_patch.yaml
@@ -24,4 +25,4 @@ patchesStrategicMerge:
 configMapGenerator:
   - name: squid-conf-template
     files:
-      - squid.conf
+      - squid.conf.template
