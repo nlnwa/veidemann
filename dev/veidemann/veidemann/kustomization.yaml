@@ -11,6 +11,7 @@ resources:
   - ../veidemann-db-initializer
   - ../veidemann-dns-resolver
   - ../veidemann-frontier
+  - ../veidemann-frontier-queue-workers
   - ../veidemann-harvester
   - ../veidemann-log-service
   - ../veidemann-metrics
