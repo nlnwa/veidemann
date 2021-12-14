@@ -19,8 +19,12 @@ spec:
         app.kubernetes.io/name: veidemann-frontier
         app.kubernetes.io/component: frontier
       annotations:
-        # skip outbound to redis
-        config.linkerd.io/skip-outbound-ports: "6379"
+        # skip linkerd proxy on outbound traffic to redis (at port 6379) and
+        # rethinkdb (at port 28015) to allow frontier a graceful shutdown;
+        # linkerd proxy will block new requests after receiving the TERM signal.
+        # See https://linkerd.io/2.11/features/protocol-detection/
+        # and https://linkerd.io/2.11/tasks/graceful-shutdown/.
+        config.linkerd.io/skip-outbound-ports: "28015,6379"
         linkerd.io/inject: enabled
     spec:
       volumes:
@@ -37,7 +41,7 @@ spec:
 
       containers:
         - name: veidemann-frontier
-          image: ghcr.io/nlnwa/veidemann-frontier:0.9.4
+          image: ghcr.io/nlnwa/veidemann-frontier:0.10.0
           ports:
             - containerPort: 7700
               name: grpc
