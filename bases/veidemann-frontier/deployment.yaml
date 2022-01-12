@@ -41,7 +41,7 @@ spec:
 
       containers:
         - name: veidemann-frontier
-          image: ghcr.io/nlnwa/veidemann-frontier:0.10.0
+          image: ghcr.io/nlnwa/veidemann-frontier:0.11.0
           ports:
             - containerPort: 7700
               name: grpc
