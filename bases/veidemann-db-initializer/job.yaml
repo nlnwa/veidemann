@@ -17,7 +17,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: veidemann-db-initializer
-          image: norsknettarkiv/veidemann-db-initializer:v0.8.0
+          image: ghcr.io/nlnwa/veidemann-rethinkdbadapter:0.10.0
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:
