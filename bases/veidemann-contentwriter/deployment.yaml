@@ -29,7 +29,7 @@ spec:
           emptyDir: {}
       containers:
         - name: veidemann-contentwriter
-          image: ghcr.io/nlnwa/veidemann-contentwriter:1.0.0-alpha.9
+          image: ghcr.io/nlnwa/veidemann-contentwriter:1.0.0-alpha.10
           ports:
             - name: grpc
               containerPort: 8082

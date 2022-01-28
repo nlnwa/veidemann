@@ -102,7 +102,7 @@ spec:
               name: cache-certificate
               readOnly: true
         - name: veidemann-harvester-proxy
-          image: norsknettarkiv/veidemann-recorderproxy:v0.3.0
+          image: ghcr.io/nlnwa/veidemann-recorderproxy:0.4.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9900
