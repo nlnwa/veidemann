@@ -8,6 +8,7 @@ resources:
   - ../veidemann-contentwriter
   - ../veidemann-controller
   - ../veidemann-dashboard
+  - ../veidemann-dashboard-docs
   - ../veidemann-db-initializer
   - ../veidemann-dns-resolver
   - ../veidemann-frontier
