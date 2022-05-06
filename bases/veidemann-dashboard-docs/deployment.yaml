@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: veidemann-dashboard-docs
-          image: ghcr.io/nlnwa/veidemann-dashboard-docs:pr-348
+          image: ghcr.io/nlnwa/veidemann-dashboard-docs:0.19.1
           ports:
             - containerPort: 80
               name: http
