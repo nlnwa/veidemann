@@ -1,0 +1,37 @@
+name: release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  packages: write # push to GitHub Container Registry
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: fluxcd/flux2/action@main
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare
+        id: prep
+        run: |
+          VERSION=sha-${GITHUB_SHA::8}
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF/refs\/tags\//}
+          fi
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+      - name: Publish Veidemann OCI artifact to GHCR
+        run: |
+          flux push artifact oci://ghcr.io/nlnwa/manifests/veidemann:${{ steps.prep.outputs.VERSION }} \
+            --path="./" \
+            --source="${{ github.event.repository.html_url }}" \
+            --revision="${GITHUB_REF_NAME}/${GITHUB_SHA}"
+          flux tag artifact oci://ghcr.io/nlnwa/manifests/veidemann:${{ steps.prep.outputs.VERSION }} --tag latest
