@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: grafana
+spec:
+  values:
+    sidecar:
+      datasources:
+        enabled: true
+        label: grafana_datasource
+        labelValue: "veidemann"
+        searchNamespace: veidemann
+    grafana.ini:
+      server:
+        root_url: https://veidemann.test/grafana
+    ingress:
+      enabled: true
+      path: /grafana
+      pathType: Prefix
+      hosts:
+        - veidemann.test
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: veidemann-grafana-subpath@kubernetescrd

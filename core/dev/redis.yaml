@@ -1,0 +1,38 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: bitnami
+spec:
+  interval: 30m
+  url: https://charts.bitnami.com/bitnami
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: redis-veidemann-frontier
+spec:
+  chart:
+    spec:
+      chart: redis
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: veidemann
+      version: "17.8.5"
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    metrics:
+      enabled: true
+    architecture: standalone
+    auth:
+      enabled: false
+    master:
+      disableCommands: [ ]
+    #    - FLUSHDB
+    #    - FLUSHALL
+      persistence:
+        enabled: false

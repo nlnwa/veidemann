@@ -1,0 +1,93 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: linkerd
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: linkerd
+  namespace: linkerd
+spec:
+  interval: 30m
+  url: https://helm.linkerd.io/stable
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: linkerd-crds
+  namespace: linkerd
+spec:
+  # timeout: 2m
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  chart:
+    spec:
+      chart: linkerd-crds
+      sourceRef:
+        kind: HelmRepository
+        name: linkerd
+        namespace: linkerd
+      version: "1.4.0"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: linkerd-control-plane
+  namespace: linkerd
+spec:
+  timeout: 2m
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  dependsOn:
+    - name: linkerd-crds
+  chart:
+    spec:
+      chart: linkerd-control-plane
+      sourceRef:
+        kind: HelmRepository
+        name: linkerd
+        namespace: linkerd
+      version: "~1.9.5"
+  values:
+    runAsRoot: true
+    # cniEnabled: true
+    identityTrustAnchorsPEM: |
+      -----BEGIN CERTIFICATE-----
+      MIIBjTCCATSgAwIBAgIRALCIZD4tatmq9EfyTZaLHlMwCgYIKoZIzj0EAwIwJTEj
+      MCEGA1UEAxMacm9vdC5saW5rZXJkLmNsdXN0ZXIubG9jYWwwHhcNMjIxMjIyMTQz
+      MTM4WhcNMzIxMjE5MTQzMTM4WjAlMSMwIQYDVQQDExpyb290LmxpbmtlcmQuY2x1
+      c3Rlci5sb2NhbDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABAoGxZ22tvfvRukZ
+      bKnMwAB0EsoV7LmeCKvFrCOFnLqVgX3Ektd0KmuyPv/6iu5dJ4Nl2yzxW02Mu+5y
+      F2S7Nh6jRTBDMA4GA1UdDwEB/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgEBMB0G
+      A1UdDgQWBBRPY3F1Vy6cCqdSmZuvyxBmnNLXZzAKBggqhkjOPQQDAgNHADBEAiBD
+      by7ISH25zKrHFNYH8JXT8IuVEW3jrf27IpL/tocixQIgRZb7dnitNLW6ktG5aVV1
+      AGCekG3AHjYk9pSb2zydhZI=
+      -----END CERTIFICATE-----
+    identity:
+      issuer:
+        tls:
+          crtPEM: |
+            -----BEGIN CERTIFICATE-----
+            MIIBtDCCAVmgAwIBAgIRAKSCYnBUuadv3+9NMC8fkWcwCgYIKoZIzj0EAwIwJTEj
+            MCEGA1UEAxMacm9vdC5saW5rZXJkLmNsdXN0ZXIubG9jYWwwHhcNMjIxMjIyMTQz
+            MTQ2WhcNMjMxMjIyMTQzMTQ2WjApMScwJQYDVQQDEx5pZGVudGl0eS5saW5rZXJk
+            LmNsdXN0ZXIubG9jYWwwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARjmN1m2RO6
+            0J4F9CgwiPAoU63cRAB8FIcPvnwrJFfVXT11Q9WuZWq7LZdJL67TLWcsQ7p08SGI
+            ZzyGryyrj7vCo2YwZDAOBgNVHQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgwBgEB/wIB
+            ADAdBgNVHQ4EFgQUfKlV8ZBRRQPlXVbFJL0a/qa0irswHwYDVR0jBBgwFoAUT2Nx
+            dVcunAqnUpmbr8sQZpzS12cwCgYIKoZIzj0EAwIDSQAwRgIhAPSGceXJZ8rixvCv
+            Bw5U0ZBCpdNt6fLrp9PP0mb0Z4V7AiEA1DGDDNU3bgr6HPcbpyJR8wsnWRgzcc79
+            gvqwe20cskw=
+            -----END CERTIFICATE-----
+          keyPEM: |
+            -----BEGIN EC PRIVATE KEY-----
+            MHcCAQEEIJw2u14Bl94I3NU6XQfJHhhYtMbA228RUsZYmWqp6KLfoAoGCCqGSM49
+            AwEHoUQDQgAEY5jdZtkTutCeBfQoMIjwKFOt3EQAfBSHD758KyRX1V09dUPVrmVq
+            uy2XSS+u0y1nLEO6dPEhiGc8hq8sq4+7wg==
+            -----END EC PRIVATE KEY-----

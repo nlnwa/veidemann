@@ -1,0 +1,26 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: veidemann-cache
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: veidemann-cache-ca
+spec:
+  isCA: true
+  commonName: veidemann-harvester
+  secretName: veidemann-cache
+  subject:
+    organizations:
+      - veidemann
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: veidemann-cache
+    kind: Issuer
+    group: cert-manager.io

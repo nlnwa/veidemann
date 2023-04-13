@@ -1,0 +1,87 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: prometheus-community
+  namespace: telemetry
+spec:
+  interval: 30m
+  url: https://prometheus-community.github.io/helm-charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: telemetry
+spec:
+  timeout: 2m
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: telemetry
+      version: "~43.1.3"
+  values:
+    global:
+      rbac:
+        create: true
+        ## Create ClusterRoles that extend the existing view, edit and admin ClusterRoles to interact with prometheus-operator CRDs
+        ## Ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles
+        createAggregateClusterRoles: true
+    defaultRules:
+      rules:
+        alertmanager: false
+    alertmanager:
+      enabled: false
+    grafana:
+      grafana.ini:
+        "auth.anonymous":
+            enabled: true
+        server:
+          root_url: https://telemetry.veidemann.test/grafana
+      ingress:
+        enabled: true
+        path: /grafana
+        pathType: Prefix
+        hosts:
+          - telemetry.veidemann.test
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          traefik.ingress.kubernetes.io/router.middlewares: telemetry-grafana-subpath@kubernetescrd
+    prometheusOperator:
+      namespaces:
+        releaseNamespace: true
+        additional:
+        - "veidemann"
+    prometheus:
+      prometheusSpec:
+        routePrefix: /prometheus
+        serviceMonitorSelectorNilUsesHelmValues: false
+      ingress:
+        enabled: true
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        hosts:
+          - telemetry.veidemann.test
+        ## Paths to use for ingress rules - one path should match the prometheusSpec.routePrefix
+        ##
+        paths:
+          - /prometheus
+---
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: grafana-subpath
+  namespace: telemetry
+spec:
+  stripPrefix:
+    forceSlash: false
+    prefixes:
+      - /grafana

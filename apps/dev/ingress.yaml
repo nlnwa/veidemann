@@ -1,0 +1,124 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: veidemann-dashboard
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: veidemann.test
+      http:
+        paths:
+          - path: /veidemann
+            pathType: Prefix
+            backend:
+              service:
+                name: veidemann-dashboard
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: veidemann-dashboard-docs
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: veidemann.test
+      http:
+        paths:
+          - path: /veidemann/docs
+            pathType: Prefix
+            backend:
+              service:
+                name: veidemann-dashboard-docs
+                port:
+                  number: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: grpcweb-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /veidemann/api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: veidemann-api
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: veidemann.test
+      http:
+        paths:
+          - path: /veidemann.api
+            pathType: Prefix
+            backend:
+              service:
+                name: veidemann-api
+                port:
+                  number: 7700
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: veidemann-api-web
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: veidemann-grpcweb-stripprefix@kubernetescrd
+spec:
+  rules:
+    - host: veidemann.test
+      http:
+        paths:
+          - path: /veidemann/api
+            pathType: Prefix
+            backend:
+              service:
+                name: veidemann-api-grpc-web
+                port:
+                  number: 10000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rethinkdb
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: rethinkdb.veidemann.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rethinkdb-admin
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: veidemann-browser
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: browser.veidemann.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: veidemann-harvester
+                port:
+                  number: 3000

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veidemann-warcvalidator
+  labels:
+    app.kubernetes.io/name: veidemann-warcvalidator
+    app.kubernetes.io/component: warcvalidator
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: veidemann-warcvalidator
+      app.kubernetes.io/component: warcvalidator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: veidemann-warcvalidator
+        app.kubernetes.io/component: warcvalidator
+    spec:
+      volumes:
+        - name: warcs
+          persistentVolumeClaim:
+            claimName: veidemann-warcs
+        - name: log4j2
+          configMap:
+            name: veidemann-warcvalidator
+            items:
+              - key: log4j2.xml
+                path: log4j2.xml
+      containers:
+        - name: veidemann-warcvalidator
+          image: ghcr.io/nlnwa/veidemann-warcvalidator:0.5.0
+          volumeMounts:
+            - name: warcs
+              mountPath: /warcs
+              subPath: warcs
+            - name: warcs
+              mountPath: /validwarcs
+              subPath: validwarcs
+            - name: warcs
+              mountPath: /invalidwarcs
+              subPath: invalidwarcs
+            - name: log4j2
+              mountPath: /veidemann/config/log4j2.xml
+              subPath: log4j2.xml
+          env:
+            - name: SLEEP_TIME
+              value: "5"
+            - name: DELETE_REPORT_IF_VALID
+              value: "true"

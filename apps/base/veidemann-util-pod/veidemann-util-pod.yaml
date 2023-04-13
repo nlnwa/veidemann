@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: veidemann-util-pod
+spec:
+  volumes:
+    - name: warcs
+      persistentVolumeClaim:
+        claimName: veidemann-warcs
+        readOnly: true
+    - name: backup
+      persistentVolumeClaim:
+        claimName: veidemann-backup
+        readOnly: true
+  containers:
+    - name: warc-inspector-image
+      image: ghcr.io/nlnwa/veidemann-warc-inspector-image:2.0.2
+      args:
+        - "sh"
+        - "-c"
+        - "trap : TERM INT; (while true; do sleep 1000; done) & wait"
+      volumeMounts:
+        - mountPath: "/veidemann/backup"
+          name: backup
+        - mountPath: "/veidemann/warcs"
+          name: warcs
+          subPath: warcs
+        - mountPath: "/veidemann/invalidwarcs"
+          name: warcs
+          subPath: invalidwarcs
+        - mountPath: "/veidemann/validwarcs"
+          name: warcs
+          subPath: validwarcs

@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: veidemann-reset
+  labels:
+    app.kubernetes.io/name: veidemann-reset
+spec:
+  # Job is eligible to be deleted one minute after it is completed
+  ttlSecondsAfterFinished: 60
+  backoffLimit: 1
+  template:
+    metadata:
+      name: veidemann-reset
+      labels:
+        app.kubernetes.io/name: veidemann-reset
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: warcs
+          persistentVolumeClaim:
+            claimName: veidemann-warcs
+        - name: backup
+          persistentVolumeClaim:
+            claimName: veidemann-backup
+      containers:
+        - name: veidemann-reset
+          image: ghcr.io/nlnwa/veidemann-reset:0.2.1
+          volumeMounts:
+            - name: warcs
+              mountPath: /warcs
+              subPath: warcs
+            - name: warcs
+              mountPath: /validwarcs
+              subPath: validwarcs
+            - name: warcs
+              mountPath: /invalidwarcs
+              subPath: invalidwarcs
+            - name: backup
+              mountPath: /backup
+          env:
+            - name: REDIS_HOST
+              value: "redis-veidemann-frontier-master"
+            - name: SCYLLA_HOSTS
+              value: "scylla-client"
+            - name: RETHINKDB_HOST
+              value: "rethinkdb-proxy"
+            - name: RETHINKDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rethinkdb-env
+                  key: DB_PASSWORD

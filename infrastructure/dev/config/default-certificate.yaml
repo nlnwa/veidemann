@@ -1,0 +1,30 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: default
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: default
+  namespace: ingress-traefik
+spec:
+  secretName: default-tls
+  dnsNames:
+    - "veidemann.test"
+    - "*.veidemann.test"
+  issuerRef:
+    name: default
+    kind: ClusterIssuer
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: ingress-traefik
+spec:
+  defaultCertificate:
+    secretName: default-tls

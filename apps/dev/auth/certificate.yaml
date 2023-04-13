@@ -1,0 +1,24 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: veidemann-selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: veidemann-auth
+spec:
+  isCA: true
+  commonName: veidemann-auth
+  secretName: veidemann-tls
+  dnsNames:
+    - "veidemann.test"
+  issuerRef:
+    name: veidemann-selfsigned-issuer
+    kind: Issuer
+  subject:
+    organizations:
+      - veidemann

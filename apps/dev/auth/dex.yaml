@@ -1,0 +1,114 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: dexidp
+spec:
+  interval: 30m
+  url: https://charts.dexidp.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: dex
+spec:
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  chart:
+    spec:
+      chart: dex
+      sourceRef:
+        kind: HelmRepository
+        name: dexidp
+        namespace: veidemann
+      version: "~0.13.0"
+  values:
+    config:
+      issuer: https://veidemann.test/dex
+      storage:
+        config:
+          inCluster: true
+        type: kubernetes
+
+      logger:
+        level: debug
+
+      web:
+        http: 0.0.0.0:5556
+        allowedOrigins:
+          - https://veidemann.test
+          - https://localhost:4200
+
+      oauth2:
+        alwaysShowLoginScreen: false
+        responseTypes:
+          - code
+          - token
+          - id_token
+        skipApprovalScreen: true
+
+      staticClients:
+        - id: veidemann-dashboard
+          name: Veidemann Admin Dashboard
+          redirectURIs:
+            - https://veidemann.test/veidemann/
+            - https://localhost:4200/
+          secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+        - id: veidemann-cli
+          name: Veidemann CLI
+          public: true
+          secret: cli-app-secret
+        - id: veidemann-api
+          name: Veidemann API
+          secret: VerySecret
+          trustedPeers:
+            - veidemann-cli
+            - veidemann-dashboard
+
+      enablePasswordDB: true
+      staticPasswords:
+        - email: admin@example.com
+          hash: $2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W
+          userID: 08a8684b-db88-4b73-90a9-3cd1661f5466
+          username: admin
+        - email: operator@example.com
+          hash: $2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W
+          userID: 79e579ab-26a9-4f9a-8e9f-ec71cd54b589
+          username: operator
+        - email: curator@example.com
+          hash: $2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W
+          userID: a373332a-71d4-4264-83cf-8ce00c12eb5a
+          username: curator
+        - email: consultant@example.com
+          hash: $2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W
+          userID: 5f38da63-9622-4912-8504-d7b512784248
+          username: consultant
+        - email: any.user@example.com
+          hash: $2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W
+          userID: bab7b9ba-550d-459d-8c1c-2e68353d8937
+          username: any.user
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dex
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+    - secretName: veidemann-tls
+      hosts:
+        - veidemann.test
+  rules:
+    - host: veidemann.test
+      http:
+        paths:
+          - path: /dex
+            pathType: Prefix
+            backend:
+              service:
+                name: dex
+                port:
+                  number: 5556

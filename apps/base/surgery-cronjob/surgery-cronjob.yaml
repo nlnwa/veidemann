@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: veidemann-surgery
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: nna-deploy
+          volumes:
+            - name: script
+              configMap:
+                defaultMode: 0777
+                name: surgery
+                items:
+                  - key: surgery.sh
+                    path: surgery.sh
+          containers:
+            - name: k8s-util
+              image: ghcr.io/nlnwa/k8s-util:2.0.3
+              imagePullPolicy: Always
+              env:
+                - name: CONTROLLER_ADDRESS
+                  value: "nettarkivet.nb.no:443"
+              envFrom:
+                - secretRef:
+                    name: surgery
+              volumeMounts:
+                - name: script
+                  mountPath: /usr/local/bin/surgery.sh
+                  subPath: surgery.sh
+              command:
+                - /bin/bash
+                - -c
+              args:
+                - veidemannctl config create-context prod ;
+                  veidemannctl config set-address ${CONTROLLER_ADDRESS} ;
+                  veidemannctl config set-apikey ${VEIDEMANN_API_KEY} ;
+                  veidemannctl report jobexecution -q state=RUNNING -o template -t '{{ .Id }}{{ nl }}' | xargs -I{} surgery.sh {} "FETCHING SLEEPING"
+  schedule: 0 0-23/4 * * *
+  successfulJobsHistoryLimit: 5
+  suspend: false

@@ -1,0 +1,70 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: jaegertracing
+  namespace: jaeger-operator
+spec:
+  interval: 30m
+  url: https://jaegertracing.github.io/helm-charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: jaeger-operator
+  namespace: jaeger-operator
+spec:
+  timeout: 2m
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  chart:
+    spec:
+      chart: jaeger-operator
+      version: "~2.38.0"
+      sourceRef:
+        kind: HelmRepository
+        name: jaegertracing
+        namespace: jaeger-operator
+  values:
+    rbac:
+      clusterRole: true
+    jaeger:
+      create: true
+      spec:
+        annotations:
+          linkerd.io/inject: enabled
+        strategy: allInOne
+        allInOne:
+          options:
+            query:
+              base-path: /jaeger
+        storage:
+          type: memory
+          options:
+            memory:
+              max-traces: 1000
+        ingress:
+          enabled: false
+        sampling:
+          options:
+            default_strategy:
+              type: probabilistic
+            param: 0.1
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jaeger
+  namespace: telemetry
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`telemetry.veidemann.test`) && PathPrefix(`/jaeger`)
+      kind: Rule
+      services:
+        - name: jaeger-operator-jaeger-query
+          port: 16686
+  tls: {}

@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: veidemann
+resources:
+  - storage.yaml
+  - cache-cert.yaml
+  - ingress.yaml
+  - ../base
+
+patchesStrategicMerge:
+  - controller-patch.yaml
+  - cache-patch.yaml
+  - debug-patch.yaml
+
+#components:
+# - auth
+#- telemetry
+
+secretGenerator:
+  - name: veidemann-controller
+    behavior: replace
+    literals:
+      - apiKeyRoleMapping.txt=ABCD-1234 ADMIN
+
+configMapGenerator:
+  - name: cache-conf
+    files:
+      - cache.conf

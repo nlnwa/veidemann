@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rethinkdb-exporter
+  labels:
+    app.kubernetes.io/name: rethinkdb-exporter
+    app.kubernetes.io/component: metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rethinkdb-exporter
+      app.kubernetes.io/component: metrics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rethinkdb-exporter
+        app.kubernetes.io/component: metrics
+    spec:
+      containers:
+        - name: rethinkdb-exporter
+          image: ghcr.io/nlnwa/rethinkdb-exporter:0.1.0
+          ports:
+            - name: http
+              containerPort: 9055
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+          envFrom:
+            - secretRef:
+                name: rethinkdb-env
+                optional: false
+          env:
+            - name: DB_HOST
+              value: "rethinkdb-proxy"
+            - name: DB_PORT
+              value: "28015"
+            - name: STATS_TABLE_ESTIMATES
+              value: "true"
+          args:
+            - "--db.address"
+            - "$(DB_HOST):$(DB_PORT)"
+            - "--db.username"
+            - "$(DB_USER)"
+            - "--db.password"
+            - "$(DB_PASSWORD)"
+            - "--stats.table-estimates"
+            - "$(STATS_TABLE_ESTIMATES)"

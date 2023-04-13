@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veidemann-ooshandler
+  labels:
+    app.kubernetes.io/name: veidemann-ooshandler
+    app.kubernetes.io/component: ooshandler
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: veidemann-ooshandler
+      app.kubernetes.io/component: ooshandler
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: veidemann-ooshandler
+        app.kubernetes.io/component: ooshandler
+      annotations:
+        linkerd.io/inject: enabled
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: veidemann-backup
+      containers:
+        - name: veidemann-ooshandler
+          image: norsknettarkiv/veidemann-ooshandler:0.1.6
+          ports:
+            - name: http-ooshandler
+              containerPort: 50052
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 9301
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data/oos
+              subPath: oos
+          args:
+            - -metrics-address
+            - 0.0.0.0:9301
+            - -data-dir
+            - /data/oos
+
+

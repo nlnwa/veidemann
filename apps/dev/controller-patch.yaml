@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: veidemann-api
+  annotations:
+    traefik.ingress.kubernetes.io/service.serversscheme: h2c
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veidemann-controller
+spec:
+  template:
+    spec:
+      containers:
+        - name: veidemann-controller
+          env:
+            - name: OPENID_CONNECT_ISSUER
+              value: ""
+            - name: SKIP_AUTHENTICATION
+              value: "true"
